@@ -5,7 +5,6 @@ import com.lms.dto.InstructorDto;
 import com.lms.repository.InstructorRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 public class InstructorService {
 
     private final InstructorRepository instructorRepository;
-    private final PasswordEncoder passwordEncoder;
 
     // 교사 등록
     public InstructorDto.InstructorResponse createInstructor(InstructorDto.CreateRequest request) {
@@ -30,12 +28,9 @@ public class InstructorService {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다: " + request.getEmail());
         }
 
-        // 비밀번호 해싱
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-
         Instructor instructor = Instructor.builder()
                 .instructorNumber(request.getInstructorNumber())
-                .password(encodedPassword)
+                .password(request.getPassword())
                 .name(request.getName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
@@ -62,7 +57,7 @@ public class InstructorService {
         Instructor instructor = instructorRepository.findByInstructorNumber(request.getInstructorNumber())
                 .orElseThrow(() -> new IllegalArgumentException("해당 교사번호의 교사를 찾을 수 없습니다: " + request.getInstructorNumber()));
 
-        if (!passwordEncoder.matches(request.getPassword(), instructor.getPassword())) {
+        if (!request.getPassword().equals(instructor.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -123,13 +118,12 @@ public class InstructorService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 교사번호의 교사를 찾을 수 없습니다: " + instructorNumber));
 
         // 현재 비밀번호 확인
-        if (!passwordEncoder.matches(request.getCurrentPassword(), instructor.getPassword())) {
+        if (!request.getCurrentPassword().equals(instructor.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        // 새 비밀번호 해싱 후 업데이트
-        String newEncodedPassword = passwordEncoder.encode(request.getNewPassword());
-        instructor.updatePassword(newEncodedPassword);
+        // 새 비밀번호 업데이트
+        instructor.updatePassword(request.getNewPassword());
     }
 
     // 교사 삭제

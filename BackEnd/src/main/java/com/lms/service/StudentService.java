@@ -7,7 +7,6 @@ import com.lms.repository.DepartmentRepository;
 import com.lms.repository.StudentRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +19,6 @@ public class StudentService {
 
     private final StudentRepository studentRepository;
     private final DepartmentRepository departmentRepository; // DepartmentRepository 주입
-    private final PasswordEncoder passwordEncoder; // SecurityConfig에서 등록한 빈 주입
 
     // 학생 등록
     public StudentDto.StudentResponse createStudent(StudentDto.CreateRequest request) {
@@ -37,12 +35,9 @@ public class StudentService {
         Department department = departmentRepository.findById(request.getDepartmentsId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 학과 ID입니다."));
 
-        // 비밀번호 해싱
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
-
         Student student = Student.builder()
                 .studentNumber(request.getStudentNumber())
-                .password(encodedPassword)
+                .password(request.getPassword())
                 .name(request.getName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
@@ -71,7 +66,7 @@ public class StudentService {
         Student student = studentRepository.findById(request.getStudentNumber())
                 .orElseThrow(() -> new IllegalArgumentException("해당 학번의 학생을 찾을 수 없습니다: " + request.getStudentNumber()));
 
-        if (!passwordEncoder.matches(request.getPassword(), student.getPassword())) {
+        if (!request.getPassword().equals(student.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -132,13 +127,12 @@ public class StudentService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 학번의 학생을 찾을 수 없습니다: " + studentNumber));
 
         // 현재 비밀번호 확인
-        if (!passwordEncoder.matches(request.getCurrentPassword(), student.getPassword())) {
+        if (!request.getCurrentPassword().equals(student.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        // 새 비밀번호 해싱 후 업데이트
-        String newEncodedPassword = passwordEncoder.encode(request.getNewPassword());
-        student.updatePassword(newEncodedPassword);
+        // 새 비밀번호 업데이트
+        student.updatePassword(request.getNewPassword());
         // studentRepository.save(student); // @Transactional에 의해 변경 감지되어 자동 저장
     }
 

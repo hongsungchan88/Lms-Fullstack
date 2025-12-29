@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useInstructorLectures, useCreateLecture, useUpdateLecture, useDeleteLecture } from '@/features/lecture/model';
 import { LoadingSpinner } from '@/shared';
 import type { LectureResponse, CreateLectureRequest, UpdateLectureRequest } from '@/entities/lecture/types/backend';
-import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilIcon, TrashIcon, BookOpenIcon } from '@heroicons/react/24/outline';
 import Modal from '@/shared/ui/Modal';
 
 export default function TeacherLectures() {

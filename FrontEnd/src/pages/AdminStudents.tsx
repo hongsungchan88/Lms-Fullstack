@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useAllStudents } from '@/features/student/model';
 import { LoadingSpinner } from '@/shared';
 import type { StudentResponse } from '@/entities/student/apis';
-import { MagnifyingGlassIcon, PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, PlusIcon, PencilIcon, TrashIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 import Modal from '@/shared/ui/Modal';
 import { useCreateStudent, useUpdateStudent, useDeleteStudent } from '@/features/admin/model';
+import { useDepartments } from '@/entities/department';
 
 export default function AdminStudents() {
   const { data: students, isLoading } = useAllStudents();
+  const { data: departments, isLoading: isDepartmentsLoading } = useDepartments();
   const createMutation = useCreateStudent();
   const updateMutation = useUpdateStudent();
   const deleteMutation = useDeleteStudent();
@@ -21,10 +23,10 @@ export default function AdminStudents() {
     name: '',
     email: '',
     phone: '',
-    departmentsId: 1,
+    departmentsId: departments && departments.length > 0 ? departments[0].departmentsId : 1,
   });
 
-  if (isLoading) {
+  if (isLoading || isDepartmentsLoading) {
     return <LoadingSpinner />;
   }
 
@@ -36,7 +38,14 @@ export default function AdminStudents() {
   ) || [];
 
   const handleCreate = () => {
-    setFormData({ studentNumber: '', password: '', name: '', email: '', phone: '', departmentsId: 1 });
+    setFormData({ 
+      studentNumber: '', 
+      password: '', 
+      name: '', 
+      email: '', 
+      phone: '', 
+      departmentsId: departments && departments.length > 0 ? departments[0].departmentsId : 1 
+    });
     setIsCreateModalOpen(true);
   };
 
@@ -110,7 +119,14 @@ export default function AdminStudents() {
         setIsCreateModalOpen(false);
         alert('학생이 추가되었습니다.');
       }
-      setFormData({ studentNumber: '', password: '', name: '', email: '', phone: '', departmentsId: 1 });
+      setFormData({ 
+        studentNumber: '', 
+        password: '', 
+        name: '', 
+        email: '', 
+        phone: '', 
+        departmentsId: departments && departments.length > 0 ? departments[0].departmentsId : 1 
+      });
     } catch (error: any) {
       console.error('학생 생성/수정 오류:', error);
       // 에러 메시지는 createStudent에서 이미 파싱되어 Error 객체로 throw됨
@@ -221,7 +237,14 @@ export default function AdminStudents() {
         <Modal onClose={() => {
           setIsCreateModalOpen(false);
           setEditingStudent(null);
-          setFormData({ studentNumber: '', password: '', name: '', email: '', phone: '', departmentsId: 1 });
+          setFormData({ 
+        studentNumber: '', 
+        password: '', 
+        name: '', 
+        email: '', 
+        phone: '', 
+        departmentsId: departments && departments.length > 0 ? departments[0].departmentsId : 1 
+      });
         }}>
           <div className="bg-white p-8 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100">
             <div className="mb-6">
@@ -284,15 +307,23 @@ export default function AdminStudents() {
               </div>
               {!editingStudent && (
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">학과 ID *</label>
-                  <input
-                    type="number"
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">학과 *</label>
+                  <select
                     value={formData.departmentsId}
                     onChange={(e) => setFormData({ ...formData, departmentsId: parseInt(e.target.value) })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-50 focus:bg-white"
                     required
-                    min="1"
-                  />
+                  >
+                    {departments && departments.length > 0 ? (
+                      departments.map((dept) => (
+                        <option key={dept.departmentsId} value={dept.departmentsId}>
+                          {dept.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value={1}>학과가 없습니다</option>
+                    )}
+                  </select>
                 </div>
               )}
               <div className="flex gap-3 pt-4">
@@ -308,7 +339,14 @@ export default function AdminStudents() {
                   onClick={() => {
                     setIsCreateModalOpen(false);
                     setEditingStudent(null);
-                    setFormData({ studentNumber: '', password: '', name: '', email: '', phone: '', departmentsId: 1 });
+                    setFormData({ 
+        studentNumber: '', 
+        password: '', 
+        name: '', 
+        email: '', 
+        phone: '', 
+        departmentsId: departments && departments.length > 0 ? departments[0].departmentsId : 1 
+      });
                   }}
                   className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-200 font-semibold"
                 >

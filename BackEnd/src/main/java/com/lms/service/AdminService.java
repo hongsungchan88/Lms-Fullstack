@@ -5,7 +5,6 @@ import com.lms.dto.AdminDto;
 import com.lms.repository.AdminRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 public class AdminService {
 
     private final AdminRepository adminRepository;
-    private final PasswordEncoder passwordEncoder;
 
     // 관리자 생성 (초기 설정용)
     public AdminDto.AdminResponse createAdmin(AdminDto.CreateRequest request) {
@@ -30,7 +28,7 @@ public class AdminService {
 
         Admin admin = Admin.builder()
                 .adminId(request.getAdminId())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword())
                 .name(request.getName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
@@ -51,7 +49,7 @@ public class AdminService {
 
         Admin admin = Admin.builder()
                 .adminId(request.getAdminId())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword())
                 .name(request.getName())
                 .email(request.getEmail())
                 .phone(request.getPhone())
@@ -66,7 +64,7 @@ public class AdminService {
         Admin admin = adminRepository.findByAdminId(request.getAdminId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자 ID입니다."));
 
-        if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
+        if (!request.getPassword().equals(admin.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
@@ -110,11 +108,11 @@ public class AdminService {
         Admin admin = adminRepository.findByAdminId(adminId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 관리자 ID입니다."));
 
-        if (!passwordEncoder.matches(request.getCurrentPassword(), admin.getPassword())) {
+        if (!request.getCurrentPassword().equals(admin.getPassword())) {
             throw new IllegalArgumentException("현재 비밀번호가 일치하지 않습니다.");
         }
 
-        admin.updatePassword(passwordEncoder.encode(request.getNewPassword()));
+        admin.updatePassword(request.getNewPassword());
     }
 
     // 관리자 삭제

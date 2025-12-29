@@ -1,0 +1,72 @@
+-- 어드민 계정 추가 SQL (H2 콘솔에서 실행)
+-- 기존 admin 계정이 있다면 먼저 삭제
+DELETE FROM ADMINS WHERE ADMIN_ID = 'admin';
+
+-- 어드민 계정 추가
+INSERT INTO ADMINS (ADMIN_ID, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE)
+VALUES ('admin', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin@lms.com', '관리자', '1234', '010-1234-5678');
+
+-- 추가 어드민 계정 예시 (선택사항)
+-- INSERT INTO ADMINS (ADMIN_ID, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE)
+-- VALUES ('admin2', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'admin2@lms.com', '관리자2', '1234', '010-5678-9012');
+
+-- ============================================
+-- 교사 계정 추가 SQL (H2 콘솔에서 실행)
+-- ============================================
+-- 기존 교사 계정이 있다면 먼저 삭제 (선택사항)
+-- DELETE FROM INSTRUCTORS WHERE INSTRUCTOR_NUMBER = 1;
+
+-- 교사 계정 추가 (교사번호는 숫자여야 함!)
+-- 교사번호 1로 교사 계정 추가
+INSERT INTO INSTRUCTORS (INSTRUCTOR_NUMBER, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE)
+VALUES (1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'teacher1@lms.com', '교사1', '1234', '010-1111-1111');
+
+-- 교사번호 2로 교사 계정 추가
+INSERT INTO INSTRUCTORS (INSTRUCTOR_NUMBER, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE)
+VALUES (2, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'teacher2@lms.com', '교사2', '1234', '010-2222-2222');
+
+-- 교사번호 11로 교사 계정 추가 (1@11 대신 11 사용)
+INSERT INTO INSTRUCTORS (INSTRUCTOR_NUMBER, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE)
+VALUES (11, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'teacher11@lms.com', '교사11', '1234', '010-1111-1111');
+
+-- ============================================
+-- 학과 추가 SQL (H2 콘솔에서 실행)
+-- ============================================
+-- 기존 학과가 있다면 먼저 삭제 (선택사항)
+-- DELETE FROM DEPARTMENTS WHERE DEPARTMENTS_ID = 1;
+
+-- 학과 추가 (학과 ID는 자동 생성됨)
+INSERT INTO DEPARTMENTS (NAME, CREATED_AT, UPDATED_AT)
+VALUES ('컴퓨터공학과', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO DEPARTMENTS (NAME, CREATED_AT, UPDATED_AT)
+VALUES ('전자공학과', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO DEPARTMENTS (NAME, CREATED_AT, UPDATED_AT)
+VALUES ('경영학과', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO DEPARTMENTS (NAME, CREATED_AT, UPDATED_AT)
+VALUES ('영어영문학과', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+-- ============================================
+-- 학생 계정 추가 SQL (H2 콘솔에서 실행)
+-- ============================================
+-- 주의: 학과가 먼저 추가되어 있어야 합니다! (departments_id가 존재해야 함)
+-- 학과 ID를 확인하려면: SELECT * FROM DEPARTMENTS;
+
+-- 기존 학생 계정이 있다면 먼저 삭제 (선택사항)
+-- DELETE FROM STUDENT WHERE STUDENT_NUMBER = '12';
+
+-- 학생 계정 추가 (학번은 문자열)
+-- 학번 12로 학생 계정 추가 (departments_id는 1로 가정, 실제 학과 ID에 맞게 수정 필요)
+INSERT INTO STUDENT (STUDENT_NUMBER, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE, DEPARTMENTS_ID)
+VALUES ('12', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'student12@lms.com', '학생12', '1234', '010-1234-5678', 1);
+
+-- 학번 2024001로 학생 계정 추가
+INSERT INTO STUDENT (STUDENT_NUMBER, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE, DEPARTMENTS_ID)
+VALUES ('2024001', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'student1@lms.com', '홍길동', '1234', '010-1111-2222', 1);
+
+-- 학번 2024002로 학생 계정 추가
+INSERT INTO STUDENT (STUDENT_NUMBER, CREATED_AT, UPDATED_AT, EMAIL, NAME, PASSWORD, PHONE, DEPARTMENTS_ID)
+VALUES ('2024002', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 'student2@lms.com', '김철수', '1234', '010-2222-3333', 1);
+
